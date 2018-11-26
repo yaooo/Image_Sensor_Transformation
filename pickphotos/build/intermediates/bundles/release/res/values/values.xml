@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <item name="action_finish" type="id"/>
+    <item name="btn_category" type="id"/>
+    <item name="photo_album_cover" type="id"/>
+    <item name="photo_album_dis_name" type="id"/>
+    <item name="photo_album_element_count" type="id"/>
+    <item name="photo_album_selected" type="id"/>
+    <item name="photo_footer" type="id"/>
+    <item name="photo_thumbview" type="id"/>
+    <item name="photo_thumbview_position" type="id"/>
+    <item name="photo_thumbview_selected" type="id"/>
+    <item name="preview" type="id"/>
+    <item name="recyclerview" type="id"/>
+    <item name="toolbar" type="id"/>
+    <string name="all_photo">All Photos</string>
+    <string name="app_name">pickphotos</string>
+    <string name="previews">preview</string>
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <!-- Support library compatibility -->
+        <item name="windowActionBarOverlay">true</item>
+    </style>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+
+    </style>
+    <style name="AppTheme.NoActionBar" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+</resources>
