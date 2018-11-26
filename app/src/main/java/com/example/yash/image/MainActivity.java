@@ -29,6 +29,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.yash.image.filter.HSBAdjustFilter;
 import com.github.tbouron.shakedetector.library.ShakeDetector;
 
 
@@ -76,17 +77,19 @@ public class MainActivity extends AppCompatActivity {
                     float mag = (float) Math.sqrt(sum);
 
 
-                    float expectedMag = 100;
+                    float expectedMag = 50;
                     if (mag > 1.4*expectedMag || mag < 0.6*expectedMag) {
                             Toast.makeText(getApplicationContext(),magentic, Toast.LENGTH_SHORT).show();
                             Drawable d = imageView.getDrawable();
                             d = convertToGrayscale(d);
                             imageView.setImageDrawable(d);
                         }
+                    }else{
+                        imageView.setImageDrawable(Drawable.createFromPath(path));
                     }
                 }
 
-                else if (sensor.getType() == Sensor.TYPE_PROXIMITY) {
+                if (sensor.getType() == Sensor.TYPE_PROXIMITY) {
                     if(imageView.getDrawable() != null) {
                         if (event.values[0] >= -SENSOR_SENSITIVITY && event.values[0] <= SENSOR_SENSITIVITY) {
                             Drawable d = convertToGrayscale(Drawable.createFromPath(path));
@@ -99,6 +102,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
+
+                //if(sensor.getType() == Sensor.TYPE_ACCELEROMETER)
             }
         };
 
@@ -108,12 +113,13 @@ public class MainActivity extends AppCompatActivity {
             public void OnShake() {
                 Toast.makeText(getApplicationContext(), "Device shaken!", Toast.LENGTH_SHORT).show();
                 Drawable d = imageView.getDrawable();
-                d = convertToGrayscale(d);
+                d.setColorFilter(new ColorMatrixColorFilter(HSBAdjustFilter.filterRGB(Math.PI/4, 1, 1)));
                 imageView.setImageDrawable(d);
             }
         });
 
         mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+
 //        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 //        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
         mSensorManager.registerListener(mSensorListener, mProximity, SensorManager.SENSOR_DELAY_GAME);
@@ -168,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void toRandom(View v){
         Drawable d = imageView.getDrawable();
-        d = convertToGrayscale(d);
+        d.setColorFilter(new ColorMatrixColorFilter(HSBAdjustFilter.filterRGB(Math.PI/4, 1, 1)));
         imageView.setImageDrawable(d);
     }
 
