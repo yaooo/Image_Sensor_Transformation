@@ -4,8 +4,14 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -89,4 +95,69 @@ public class MainActivity extends AppCompatActivity {
 
         return null;
     }
-}
+
+
+
+    protected Drawable magneticFilter(Bitmap source){
+
+
+        return null;
+    }
+
+    protected Drawable ColorFilterTransformation(BitmapDrawable source)
+    {
+
+        int mColor = 2;
+
+        Bitmap image = source.getBitmap();
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setColorFilter(new PorterDuffColorFilter(mColor, PorterDuff.Mode.SRC_ATOP));
+        canvas.drawBitmap(image, 0, 0, paint);
+
+        image.recycle();
+
+        return new BitmapDrawable(getResources(), image);
+
+    }
+
+
+    protected Drawable circleImageTransform(BitmapDrawable feedIn) {
+
+            Bitmap source = feedIn.getBitmap();
+            int size = Math.min(source.getWidth(), source.getHeight());
+
+            int width = (source.getWidth() - size) / 2;
+            int height = (source.getHeight() - size) / 2;
+
+            Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+
+            Canvas canvas = new Canvas(bitmap);
+            Paint paint = new Paint();
+            BitmapShader shader =
+                    new BitmapShader(source, BitmapShader.TileMode.CLAMP, BitmapShader.TileMode.CLAMP);
+            if (width != 0 || height != 0) {
+                // source isn't square, move viewport to center
+                Matrix matrix = new Matrix();
+                matrix.setTranslate(-width, -height);
+                shader.setLocalMatrix(matrix);
+            }
+            paint.setShader(shader);
+            paint.setAntiAlias(true);
+
+            float r = size / 2f;
+            canvas.drawCircle(r, r, r, paint);
+
+            source.recycle();
+
+            return new BitmapDrawable(getResources(), source);
+        }
+
+    }
