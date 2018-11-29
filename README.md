@@ -4,6 +4,7 @@
 You will have to have the following application installed:
 
 * Android Studio and the corresponding SDK
+* The cell phone should at least have the accelerometer, proximity senor and magnetic sensor.
 
 ## Project management and testing
 * Use Git/Bitbucket to manage your repository
