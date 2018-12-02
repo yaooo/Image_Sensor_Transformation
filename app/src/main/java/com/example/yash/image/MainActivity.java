@@ -1,5 +1,6 @@
 package com.example.yash.image;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
@@ -11,6 +12,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -31,6 +33,13 @@ import android.widget.Toast;
 
 import com.example.yash.image.filter.HSBAdjustFilter;
 import com.github.tbouron.shakedetector.library.ShakeDetector;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -68,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-                        String magentic = "磁场\n" + "X：" + event.values[0] + "\n" + "Y:"
+                        String magentic = "Magnetic Field\n" + "X：" + event.values[0] + "\n" + "Y:"
                             + event.values[1] + "\n" + "Z:" + event.values[2] + "\n";
                     float x = event.values[0];
                     float y = event.values[1];
@@ -78,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                     float expectedMag = 50;
-                    if (mag > 1.4*expectedMag || mag < 0.6*expectedMag) {
+                    if (mag > 1.8*expectedMag || mag < 0.2*expectedMag) {
                             Toast.makeText(getApplicationContext(),magentic, Toast.LENGTH_SHORT).show();
                             Drawable d = imageView.getDrawable();
                             d = convertToGrayscale(d);
@@ -172,16 +181,60 @@ public class MainActivity extends AppCompatActivity {
         ShakeDetector.destroy();
     }
 
-    public void toRandom(View v){
-        Drawable d = imageView.getDrawable();
-        d.setColorFilter(new ColorMatrixColorFilter(HSBAdjustFilter.filterRGB(Math.PI/4, 1, 1)));
-        imageView.setImageDrawable(d);
+    public void resetPhoto(View v){
+        if(path.length()>1)
+            imageView.setImageDrawable(Drawable.createFromPath(path));
     }
+//
+//    public void savePhoto(View v) throws IOException {
+//        if(path.length()>1) {
+//            BitmapDrawable draw = (BitmapDrawable) imageView.getDrawable();
+//            Bitmap bitmap = draw.getBitmap();
+//
+//            FileOutputStream outStream = null;
+//            String newPath = makePhotoPath(path);
+//            File outFile = new File(newPath);
+//            outStream = new FileOutputStream(outFile);
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+//            outStream.flush();
+//            outStream.close();
+//            Toast.makeText(getApplicationContext(), "Save photo to " + newPath, Toast.LENGTH_LONG).show();
+//
+//        }
+//    }
 
-    public void cvtBlack(View v){
-        Drawable d = imageView.getDrawable();
-        d = convertToGrayscale(d);
-        imageView.setImageDrawable(d);
+
+    public void savePhoto(View v) throws IOException {
+        if(path.length()>1) {
+            imageView.buildDrawingCache();
+
+            Bitmap bmp = imageView.getDrawingCache();
+            File storageLoc = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES); //context.getExternalFilesDir(null);
+
+            File file = new File(storageLoc, makePhotoPath(path));
+            String newPath = file.getAbsolutePath();
+            try{
+                FileOutputStream fos = new FileOutputStream(file);
+                bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                fos.close();
+
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Toast.makeText(getApplicationContext(), "Save photo to " + newPath, Toast.LENGTH_LONG).show();
+
+        }
+    }
+    private String makePhotoPath(String path){
+        if (path.length() > 0){
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+            String currentDateandTime = sdf.format(new Date());
+            path = currentDateandTime+".jpg";
+        }
+        return path;
     }
 
 

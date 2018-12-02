@@ -14,15 +14,15 @@
 
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:onClick="cvtBlack"
-        android:text="To Black" />
+        android:onClick="savePhoto"
+        android:text="Save Photo" />
 
     <Button
 
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:onClick="toRandom"
-        android:text="Random" />
+        android:onClick="resetPhoto"
+        android:text="Reset Photo" />
 
     <ImageView
         android:id="@+id/imageView"
