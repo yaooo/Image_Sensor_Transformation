@@ -33,6 +33,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.yash.image.filter.HSBAdjustFilter;
+import com.example.yash.image.filter.filter;
 import com.github.tbouron.shakedetector.library.ShakeDetector;
 
 import java.io.File;
@@ -122,9 +123,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void OnShake() {
                 Toast.makeText(getApplicationContext(), "Device shaken!", Toast.LENGTH_SHORT).show();
-                Drawable d = imageView.getDrawable();
-                d.setColorFilter(new ColorMatrixColorFilter(HSBAdjustFilter.filterRGB(Math.PI/4, 1, 1)));
-                imageView.setImageDrawable(d);
+
+                //Drawable d = imageView.getDrawable();
+                imageView.buildDrawingCache();
+                Bitmap imageToSave = imageView.getDrawingCache();
+
+                Bitmap newImg = filter.random(imageToSave);
+
+                imageView.setImageBitmap(newImg);
             }
         });
 
