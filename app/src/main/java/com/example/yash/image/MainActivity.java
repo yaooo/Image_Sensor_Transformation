@@ -26,6 +26,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -185,56 +186,70 @@ public class MainActivity extends AppCompatActivity {
         if(path.length()>1)
             imageView.setImageDrawable(Drawable.createFromPath(path));
     }
-//
-//    public void savePhoto(View v) throws IOException {
-//        if(path.length()>1) {
-//            BitmapDrawable draw = (BitmapDrawable) imageView.getDrawable();
-//            Bitmap bitmap = draw.getBitmap();
-//
-//            FileOutputStream outStream = null;
-//            String newPath = makePhotoPath(path);
-//            File outFile = new File(newPath);
-//            outStream = new FileOutputStream(outFile);
-//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
-//            outStream.flush();
-//            outStream.close();
-//            Toast.makeText(getApplicationContext(), "Save photo to " + newPath, Toast.LENGTH_LONG).show();
-//
-//        }
-//    }
 
 
     public void savePhoto(View v) throws IOException {
         if(path.length()>1) {
             imageView.buildDrawingCache();
+            Bitmap imageToSave = imageView.getDrawingCache();
 
-            Bitmap bmp = imageView.getDrawingCache();
-            File storageLoc = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES); //context.getExternalFilesDir(null);
+            createDirectoryAndSaveFile(imageToSave);
 
-            File file = new File(storageLoc, makePhotoPath(path));
-            String newPath = file.getAbsolutePath();
-            try{
-                FileOutputStream fos = new FileOutputStream(file);
-                bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                fos.close();
-
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Toast.makeText(getApplicationContext(), "Save photo to " + newPath, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Saved to Sensor folder", Toast.LENGTH_LONG).show();
 
         }
     }
-    private String makePhotoPath(String path){
-        if (path.length() > 0){
+
+    private void createDirectoryAndSaveFile(Bitmap imageToSave) {
+        String fileName = makePhotoPath();
+        File direct = new File(Environment.getExternalStorageDirectory() + "/Sensor");
+
+        if (!direct.exists()) {
+            File wallpaperDirectory = new File(Environment.getExternalStorageDirectory() + "/Sensor");
+            wallpaperDirectory.mkdirs();
+        }
+
+        File file = new File(new File(Environment.getExternalStorageDirectory() + "/Sensor"), fileName);
+        if (file.exists()) {
+            file.delete();
+        }
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            imageToSave.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private String makePhotoPath(){
             @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
             String currentDateandTime = sdf.format(new Date());
-            path = currentDateandTime+".jpg";
+            return "Sensor_" + currentDateandTime+".jpg";
+    }
+
+    private Bitmap drawableToBitmap (Drawable drawable) {
+        Bitmap bitmap = null;
+
+        if (drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            if(bitmapDrawable.getBitmap() != null) {
+                return bitmapDrawable.getBitmap();
+            }
         }
-        return path;
+
+        if(drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
+        } else {
+            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        }
+
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
     }
 
 
@@ -262,11 +277,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
-
-
-
     protected Drawable convertToGrayscale(Drawable drawable) {
         ColorMatrix matrix = new ColorMatrix();
         matrix.setSaturation(0);
@@ -280,15 +290,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     protected Drawable randomFiler(Drawable drawable){
-
         return null;
     }
 
-
-
     protected Drawable magneticFilter(Bitmap source){
-
-
         return null;
     }
 
