@@ -92,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
                     if (mag > 1.8*expectedMag || mag < 0.2*expectedMag) {
                             Toast.makeText(getApplicationContext(),magentic, Toast.LENGTH_SHORT).show();
                             Drawable d = imageView.getDrawable();
+
+                            //TODO
                             d = convertToGrayscale(d);
                             imageView.setImageDrawable(d);
                         }
@@ -100,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
+                //TODO
                 if (sensor.getType() == Sensor.TYPE_PROXIMITY) {
                     if(imageView.getDrawable() != null) {
                         if (event.values[0] >= -SENSOR_SENSITIVITY && event.values[0] <= SENSOR_SENSITIVITY) {
