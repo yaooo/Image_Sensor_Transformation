@@ -1,10 +1,6 @@
 package com.example.yash.image.filter;
-
-
-import android.graphics.Color;
 import android.graphics.ColorMatrix;
 
-import com.example.yash.image.setColorFilterMat;
 
 /**
  * Ref: JH lab: HSB Filter
@@ -55,12 +51,8 @@ public class HSBAdjustFilter {
                 {0, 1, 0, 0, 0 },
                 {0, 0, 1, 0, 0 }, {0, 0, 0, 1, 0 }};
         //build contrast matrix
-
-
         //build saturation matrix
-
-
-                //build brightness matrix
+        //build brightness matrix
 
         double[][] result_double = imgMath.matMul(foo, hueMat);
 

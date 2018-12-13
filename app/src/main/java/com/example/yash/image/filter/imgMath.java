@@ -152,10 +152,4 @@ public class imgMath {
 
         return myMatrixC;
     }
-/*
-    public static float[][] rot_Z_axis(double a){
-
-
-    }
-    */
 }
