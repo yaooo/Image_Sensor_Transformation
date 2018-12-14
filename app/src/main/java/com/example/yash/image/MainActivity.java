@@ -29,6 +29,7 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.example.yash.image.filter.filter;
 import com.github.tbouron.shakedetector.library.ShakeDetector;
@@ -38,6 +39,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import com.mukesh.image_processing.ImageProcessor;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -48,10 +50,11 @@ public class MainActivity extends AppCompatActivity {
     private static final int SENSOR_SENSITIVITY = 4;
     private static int RESULT_LOAD_IMAGE = 1;
     ImageView imageView;
+    TextView appliedFilter;
 
     // To store the path of the original image
     private static String path = "";
-
+    private int degrees = 0;
 
     /**
      * Create three sensors: accelerometer, magnetic_field, proximity
@@ -62,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         imageView = findViewById(R.id.imageView);
         mSensorManager = (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
-
+        appliedFilter = findViewById(R.id.appliedFilter);
         mSensorListener = new SensorEventListener() {
             @Override
             public void onAccuracyChanged(Sensor arg0, int arg1) {
@@ -75,23 +78,23 @@ public class MainActivity extends AppCompatActivity {
                     if(imageView.getDrawable() != null){
                         String magentic = "Magnetic Field\n" + "X：" + event.values[0] + "\n" + "Y:"
                             + event.values[1] + "\n" + "Z:" + event.values[2] + "\n";
-                    float x = event.values[0];
-                    float y = event.values[1];
-                    float z = event.values[2];
-                    float sum = (x*x + y*y + z*z);
-                    float mag = (float) Math.sqrt(sum);
+                        float x = event.values[0];
+                        float y = event.values[1];
+                        float z = event.values[2];
+                        float sum = (x*x + y*y + z*z);
+                        float mag = (float) Math.sqrt(sum);
 
 
-                    float expectedMag = 50;
-                    if (mag > 1.8*expectedMag || mag < 0.2*expectedMag) {
-                            Toast.makeText(getApplicationContext(),magentic, Toast.LENGTH_SHORT).show();
-                            Drawable d = imageView.getDrawable();
-
-                            //TODO
-                            d = convertToGrayscale(d);
-                            imageView.setImageDrawable(d);
+                        float expectedMag = 50;
+                        if (mag > 1.8*expectedMag || mag < 0.2*expectedMag) {
+                            imageView.buildDrawingCache();
+                            Bitmap result= filter.magneticFilter(imageView.getDrawingCache());
+                            imageView.setImageBitmap(result);
+                            //Toast.makeText(getApplicationContext(),"Magnetic Filter!", Toast.LENGTH_SHORT).show();
+                            appliedFilter.setText("Magnetic Filter Applied!");
                         }
                     }else{
+                        appliedFilter.setText("");
                         imageView.setImageDrawable(Drawable.createFromPath(path));
                     }
                 }
@@ -100,16 +103,22 @@ public class MainActivity extends AppCompatActivity {
                 if (sensor.getType() == Sensor.TYPE_PROXIMITY) {
                     if(imageView.getDrawable() != null) {
                         if (event.values[0] >= -SENSOR_SENSITIVITY && event.values[0] <= SENSOR_SENSITIVITY) {
-                            Drawable d = convertToGrayscale(Drawable.createFromPath(path));
+                            //ImageProcessor imageProcessor = new ImageProcessor();
+                            Drawable d = imageView.getDrawable();
+                            d = convertToGrayscale(d);
                             imageView.setImageDrawable(d);
-                            Toast.makeText(getApplicationContext(), "near", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getApplicationContext(),"Proximity Filter!", Toast.LENGTH_SHORT).show();
+                            appliedFilter.setText("Proximity Filter Applied!");
                         } else {
                             //far
+                            appliedFilter.setText("");
                             imageView.setImageDrawable(Drawable.createFromPath(path));
-                            Toast.makeText(getApplicationContext(), "far", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getApplicationContext(), "far", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
+
+
             }
         };
 
@@ -119,10 +128,10 @@ public class MainActivity extends AppCompatActivity {
         ShakeDetector.create(this, new ShakeDetector.OnShakeListener() {
             @Override
             public void OnShake() {
-                Toast.makeText(getApplicationContext(), "Device shaken!", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(),"Device Shaken!", Toast.LENGTH_SHORT).show();
                 imageView.buildDrawingCache();
                 Bitmap imageToSave = imageView.getDrawingCache();
-
+                appliedFilter.setText("Device Shaken!");
                 // Randomly pick a filter and make changes based on the current image
                 Bitmap newImg = filter.random(imageToSave);
                 imageView.setImageBitmap(newImg);
@@ -134,6 +143,27 @@ public class MainActivity extends AppCompatActivity {
         mSensorManager.registerListener(mSensorListener,
                 mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
                 SensorManager.SENSOR_DELAY_GAME);
+        mSensorManager.registerListener(mSensorListener,
+                mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT),
+                SensorManager.SENSOR_DELAY_GAME);
+
+
+        imageView.setOnClickListener(new View.OnClickListener(){
+             @Override
+             public void onClick(View arg0) {
+                 if(imageView.getDrawable() != null) {
+                     degrees += 90;
+                     degrees = degrees % 360;
+                     imageView.setRotation(degrees);
+                     //Toast.makeText(getApplicationContext(),"Rotated!", Toast.LENGTH_SHORT).show();
+                     if (degrees!=0) {
+                         appliedFilter.setText("Rotated");
+                     }else{
+                         appliedFilter.setText("");
+                     }
+                 }
+             }
+        });
 
         Button buttonLoadImage = findViewById(R.id.buttonImage);
         buttonLoadImage.setOnClickListener(new View.OnClickListener() {
@@ -156,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         mSensorManager.registerListener(mSensorListener, mProximity, SensorManager.SENSOR_DELAY_NORMAL);
         mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT), SensorManager.SENSOR_DELAY_NORMAL);
         ShakeDetector.start();
     }
 

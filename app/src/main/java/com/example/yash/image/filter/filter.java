@@ -27,4 +27,10 @@ public class filter {
                 return resize;
         }
     }
+
+    public static Bitmap magneticFilter(Bitmap bitmap){
+        Bitmap resize = Bitmap.createScaledBitmap(bitmap,(int)(bitmap.getWidth()*0.6), (int)(bitmap.getHeight()*0.6), true);
+        ImageProcessor imageProcessor = new ImageProcessor();
+            return imageProcessor.applyFleaEffect(resize);
+    }
 }
