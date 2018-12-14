@@ -15,11 +15,11 @@ You will have to have the following application installed:
 * Use Git to manage this repository
 * The app runs on Android API Level 26 (set min SDK to 23, target can still be 26)
 * Require testing with a physical phone
-
-* Yao Shi - Working on Application Interface designs and Sensor Listener Connection
-* Shuyu Chen - Designing Image filters and Implement Listeners
-* Bhargav Sonani - Connecting Sensor Listeners with Image filters
-* Nakul Patel - Connecting Sensor Listeners with Image filters 
+* Work distribution:
+  * Yao Shi - Working on Application Interface designs and Sensor Listener Connection
+  * Shuyu Chen - Designing Image filters and Implement Listeners
+  * Bhargav Sonani - Connecting Sensor Listeners with Image filters
+  * Nakul Patel - Connecting Sensor Listeners with Image filters 
 
 ## Built with
 * [Picasso-Transformations](https://github.com/wasabeef/picasso-transformations) - A Set of Image Filters
@@ -29,5 +29,5 @@ You will have to have the following application installed:
 ## Author
 * @Yao Shi
 * @Shuyu Chen
-* @Bsonani
+* @Bhargav Sonani
 * @Nakul Patel
