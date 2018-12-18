@@ -4,7 +4,7 @@
 You will have to have the following application installed:
 
 * Android Studio and the corresponding SDK
-* The cell phone should at least have the accelerometer, proximity senor and magnetic sensor.
+* The cell phone should at least have the accelerometer, proximity sensor and magnetic sensor.
 
 ## Overview
 * With the three senors above, users are able to make modifications on image selected using different actions.
